@@ -1,4 +1,16 @@
-[gd_scene format=3 uid="uid://bs023qnsgc6r5"]
+[gd_scene load_steps=6 format=3 uid="uid://bs023qnsgc6r5"]
+
+[ext_resource type="Script" uid="uid://m6vu17lpk428" path="res://game.gd" id="1_80nbo"]
+[ext_resource type="Texture2D" uid="uid://d3qmne5ervd" path="res://assets/usflag.png" id="2_e2o6t"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mwb40"]
+bg_color = Color(0.52844846, 0.6, 0.53036547, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_80nbo"]
+bg_color = Color(0.37720984, 0.37045315, 0.41568628, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e2o6t"]
+bg_color = Color(0.41568628, 0.27761942, 0.23054749, 1)
 
 [node name="game" type="Control"]
 layout_mode = 3
@@ -7,3 +19,149 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_80nbo")
+
+[node name="bg" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 1919.0
+offset_bottom = 1081.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_mwb40")
+
+[node name="Line2D" type="Line2D" parent="bg"]
+position = Vector2(0, -7)
+points = PackedVector2Array(0, 540, 1920, 540)
+
+[node name="console" type="Panel" parent="."]
+layout_mode = 0
+offset_top = 852.0
+offset_right = 1921.0
+offset_bottom = 1085.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_80nbo")
+
+[node name="flag" type="Sprite2D" parent="console"]
+position = Vector2(1007, 114.999985)
+scale = Vector2(1.416, 1.7424245)
+texture = ExtResource("2_e2o6t")
+
+[node name="hp" type="Label" parent="console"]
+layout_mode = 0
+offset_left = 1193.0
+offset_top = 13.0
+offset_right = 1676.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 48
+text = "HP: -1"
+
+[node name="money" type="Label" parent="console"]
+layout_mode = 0
+offset_left = 1198.0
+offset_top = 86.0
+offset_right = 1681.0
+offset_bottom = 153.0
+theme_override_font_sizes/font_size = 48
+text = "$-00"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="console"]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 29.0
+offset_right = 798.0
+offset_bottom = 204.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="console/ScrollContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="oppbar" type="Panel" parent="."]
+layout_mode = 0
+offset_top = -2.0
+offset_right = 1921.0
+offset_bottom = 165.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_e2o6t")
+
+[node name="flag" type="Sprite2D" parent="oppbar"]
+position = Vector2(984.74994, 83)
+scale = Vector2(1.4300001, 1.2803026)
+texture = ExtResource("2_e2o6t")
+
+[node name="hp" type="Label" parent="oppbar"]
+layout_mode = 0
+offset_left = 1177.0
+offset_top = 8.0
+offset_right = 1660.0
+offset_bottom = 57.0
+theme_override_font_sizes/font_size = 48
+text = "HP: -1"
+
+[node name="money" type="Label" parent="oppbar"]
+layout_mode = 0
+offset_left = 1182.0
+offset_top = 81.0
+offset_right = 1665.0
+offset_bottom = 148.0
+theme_override_font_sizes/font_size = 48
+text = "$-00"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="oppbar"]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 29.0
+offset_right = 787.0
+offset_bottom = 148.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="oppbar/ScrollContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="myField" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 554.0
+offset_right = 1902.0
+offset_bottom = 832.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="myField"]
+custom_minimum_size = Vector2(1888, 278)
+layout_mode = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="oppField" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 205.0
+offset_right = 1902.0
+offset_bottom = 483.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="oppField"]
+custom_minimum_size = Vector2(1888, 278)
+layout_mode = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="serverid" type="Button" parent="."]
+layout_mode = 0
+offset_left = 363.0
+offset_top = 205.0
+offset_right = 431.0
+offset_bottom = 483.0
+text = "SUBMIT"
+
+[node name="LineEdit" type="LineEdit" parent="serverid"]
+layout_mode = 0
+offset_left = 309.0
+offset_top = -13.0
+offset_right = 1099.0
+offset_bottom = 100.0
+
+[node name="endTurn" type="Button" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 1678.0
+offset_top = 687.0
+offset_right = 1805.0
+offset_bottom = 730.0
+text = "end turn"
+
+[connection signal="pressed" from="serverid" to="." method="_on_serverid_pressed"]
+[connection signal="pressed" from="endTurn" to="." method="_on_end_turn_pressed"]

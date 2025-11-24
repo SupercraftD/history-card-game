@@ -1,0 +1,72 @@
+[gd_scene load_steps=6 format=3 uid="uid://dtusuncnjuh3c"]
+
+[ext_resource type="Texture2D" uid="uid://byiccs4k8u2ly" path="res://assets/icon.svg" id="1_kikvd"]
+[ext_resource type="Script" uid="uid://doloi168spa75" path="res://card.gd" id="1_rjlel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nxf5b"]
+bg_color = Color(0.6, 0.5777668, 0.549297, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kikvd"]
+bg_color = Color(0.19859563, 0.6, 0.28311634, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rjlel"]
+bg_color = Color(0.734375, 0.1703364, 0.25838754, 1)
+
+[node name="Card" type="Control"]
+custom_minimum_size = Vector2(123, 207)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1797.0
+offset_bottom = -873.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rjlel")
+
+[node name="bg" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 122.0
+offset_bottom = 206.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_nxf5b")
+
+[node name="TextureRect" type="TextureRect" parent="bg"]
+layout_mode = 0
+offset_right = 122.0
+offset_bottom = 206.0
+texture = ExtResource("1_kikvd")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="atk" type="Panel" parent="bg"]
+layout_mode = 0
+offset_top = 166.0
+offset_right = 40.0
+offset_bottom = 206.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_kikvd")
+
+[node name="Label" type="Label" parent="bg/atk"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 24
+text = "12"
+
+[node name="hp" type="Panel" parent="bg"]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 166.0
+offset_right = 122.0
+offset_bottom = 206.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_rjlel")
+
+[node name="Label" type="Label" parent="bg/hp"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 24
+text = "12"
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

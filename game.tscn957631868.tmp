@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=3 uid="uid://bs023qnsgc6r5"]
+
+[ext_resource type="Script" uid="uid://m6vu17lpk428" path="res://game.gd" id="1_80nbo"]
+[ext_resource type="Texture2D" uid="uid://d3qmne5ervd" path="res://assets/usflag.png" id="2_e2o6t"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mwb40"]
+bg_color = Color(0.52844846, 0.6, 0.53036547, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_80nbo"]
+bg_color = Color(0.37720984, 0.37045315, 0.41568628, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e2o6t"]
+bg_color = Color(0.41568628, 0.27761942, 0.23054749, 1)
+
+[node name="game" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_80nbo")
+
+[node name="bg" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 1919.0
+offset_bottom = 1081.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_mwb40")
+
+[node name="Line2D" type="Line2D" parent="bg"]
+position = Vector2(0, -7)
+points = PackedVector2Array(0, 540, 1920, 540)
+
+[node name="console" type="Panel" parent="."]
+layout_mode = 0
+offset_top = 852.0
+offset_right = 1921.0
+offset_bottom = 1085.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_80nbo")
+
+[node name="flag" type="Sprite2D" parent="console"]
+position = Vector2(932, 118)
+scale = Vector2(2.016, 1.6969697)
+texture = ExtResource("2_e2o6t")
+
+[node name="oppbar" type="Panel" parent="."]
+layout_mode = 0
+offset_top = -2.0
+offset_right = 1921.0
+offset_bottom = 165.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_e2o6t")
+
+[node name="flag" type="Sprite2D" parent="oppbar"]
+position = Vector2(955, 83)
+scale = Vector2(1.6679997, 1.2803026)
+texture = ExtResource("2_e2o6t")
+
+[node name="serverid" type="Button" parent="."]
+layout_mode = 0
+offset_left = 225.0
+offset_top = 319.0
+offset_right = 465.0
+offset_bottom = 418.0
+text = "SUBMIT"
+
+[node name="LineEdit" type="LineEdit" parent="serverid"]
+layout_mode = 0
+offset_left = 309.0
+offset_top = -13.0
+offset_right = 1099.0
+offset_bottom = 100.0
+
+[node name="endTurn" type="Button" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 1678.0
+offset_top = 687.0
+offset_right = 1805.0
+offset_bottom = 730.0
+text = "end turn"
+
+[connection signal="pressed" from="serverid" to="." method="_on_serverid_pressed"]
+[connection signal="pressed" from="endTurn" to="." method="_on_end_turn_pressed"]
