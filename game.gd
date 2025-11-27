@@ -23,6 +23,9 @@ var ismyturn = false
 
 var hand = []
 
+@onready var my_field := $myField
+@onready var opp_field := $oppfield
+
 func _ready():
 	#test
 	Firebase.Auth.signup_succeeded.connect(TESTLOGIN)
@@ -301,11 +304,30 @@ func _on_end_turn_pressed():
 #         at the start of opponent's next turn, execAction is called with the same string.
 #@param <action>:String, data describing action done. format TBD
 func execAction(action):
+	var parts = action.split(" ") 
 	
+	var actor = int(parts[0])
+	var command = parts[1]
+	var cardName = parts[2]
+	
+	if command == "play":
+		var card1: CardNode = cardScene.instantiate() #new unrelated cardnode
+		card1.setCard(cardName)  #configure card info from the card to play
+		
+		if actor == player:
+			my_field.add_child(card1) #if player does it, add it to their field, etc
+		else:
+			opp_field.add_child(card1)
 	##what the button action
 	pass
 
 #handles when a card in the hand is clicked
 #@param <card>:CardNode, reference to the card node in hand
-func handCardClicked(card : CardNode):
-	pass
+func handCardClicked(card : CardNode): 
+	card.get_parent().remove_child(card) #remove card from parent of hand 
+	my_field.add_child(card) 
+	
+	var act = str(player) + " play " + card.card_name #does like 1 play musketeer 
+	execAction(act)
+	turnsActions.append(act)
+	
