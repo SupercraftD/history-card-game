@@ -1,7 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dtusuncnjuh3c"]
+[gd_scene load_steps=7 format=3 uid="uid://dtusuncnjuh3c"]
 
 [ext_resource type="Texture2D" uid="uid://byiccs4k8u2ly" path="res://assets/icon.svg" id="1_kikvd"]
 [ext_resource type="Script" uid="uid://doloi168spa75" path="res://card.gd" id="1_rjlel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q5obu"]
+bg_color = Color(1, 0.8693409, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nxf5b"]
 bg_color = Color(0.6, 0.5777668, 0.549297, 1)
@@ -23,6 +26,16 @@ offset_bottom = -873.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_rjlel")
+
+[node name="frame" type="Panel" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -7.0
+offset_top = -8.0
+offset_right = 128.0
+offset_bottom = 213.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_q5obu")
 
 [node name="bg" type="Panel" parent="."]
 layout_mode = 0

@@ -204,6 +204,7 @@ func doSetup():
 	
 	setup = true
 	if player == 1:
+		ismyturn=true
 		turnStart(data)
 
 #holds a reference to the packed card scene
@@ -269,6 +270,7 @@ func dataUpdate(d):
 		if player == 1:
 			print(d)
 		turnStart(data)
+		
 
 #handles the start of a turn. PROBABLY NOT EVER CALLED BY YOU (yes, I mean you)
 #@param <data>:Dictionary, all the data of the server at the start of the turn
@@ -295,6 +297,9 @@ func turnStart(data):
 		for action in data.turns:
 			execAction(action)
 	turnsActions = ["-1"]
+	
+	for myCard : CardNode in my_field.get_children():
+		myCard.handler.turnStart()
 
 #should hold this turns actions
 var turnsActions = ["-1"]
@@ -327,12 +332,29 @@ func execAction(action):
 		var card1: CardNode = cardScene.instantiate() #new unrelated cardnode
 		card1.setCard(cardName)  #configure card info from the card to play
 		
+		card1.clicked.connect(fieldCardClicked.bind(card1, actor))
+		
 		if actor == player:
 			my_field.add_child(card1) #if player does it, add it to their field, etc
 			my_field.move_child(card1, slot)
 		else:
 			opp_field.add_child(card1)
 			opp_field.move_child(card1, slot)
+	elif command == "attack":
+		var attackerSlot = int(parts[2])
+		var victimSlot = int(parts[3])
+		
+		var attacker : CardNode = null
+		var victim : CardNode = null
+		
+		if actor == player:
+			attacker = my_field.get_child(attackerSlot)
+			victim = opp_field.get_child(victimSlot)
+		else:
+			attacker = opp_field.get_child(attackerSlot)
+			victim = my_field.get_child(victimSlot)
+		
+		attacker.handler.attack(victim)
 
 
 #handles when a card in the hand is clicked
@@ -348,9 +370,19 @@ func handCardClicked(card : CardNode):
 var prevState = ""
 func updateSelectionState(state):
 	
+	selectionState = state
 	clearCandidateHandPlaces()
+	clearHighlights()
+	
+	if selectedCard != null:
+		$console/RichTextLabel.text = selectedCard.description
+	else:
+		$console/RichTextLabel.text = ""
 	
 	if state == "hand":
+		
+		if not ismyturn:
+			return
 		
 		var idx = 0
 		
@@ -363,8 +395,26 @@ func updateSelectionState(state):
 			my_field.move_child(candidate, idx)
 			candidate.clicked.connect(handCandidateSelected.bind(idx))
 			idx+=2
+	elif state == "":
+		#vestigial
+		$console/RichTextLabel.text = ""
+	
+	elif state == "choosingattacktarget":
+		
+		selectedCard.highlight()
+		for card : CardNode in opp_field.get_children():
+			card.candidateHighlight()
+	
+	elif state == "justselected":
+		selectedCard.highlight()
 	
 	prevState = state
+
+func clearHighlights():
+	for i : CardNode in opp_field.get_children():
+		i.clearFrame()
+	for i : CardNode in my_field.get_children():
+		i.clearFrame()
 
 func clearCandidateHandPlaces():
 	for i in my_field.get_children():
@@ -374,6 +424,7 @@ func clearCandidateHandPlaces():
 
 func handCandidateSelected(idx):
 	clearCandidateHandPlaces()
+
 	var slot = int(idx/2)
 	
 	selectedCard.get_parent().remove_child(selectedCard) #remove card from parent of hand 
@@ -385,3 +436,32 @@ func handCandidateSelected(idx):
 	if turnsActions[0]=="-1":
 		turnsActions = []
 	turnsActions.append(act)
+	
+	selectedCard = null
+	updateSelectionState("")
+
+func fieldCardClicked(card : CardNode, actor):
+	if selectionState != "choosingattacktarget" or (selectionState == "choosingattacktarget" and actor==player):
+		
+		selectedCard = card
+		updateSelectionState("justselected")
+		
+		if !ismyturn:
+			return
+		
+		if actor == player:
+			if card.cardData.canAttack:
+				updateSelectionState("choosingattacktarget")
+
+	else:
+		if actor != player:
+			
+			var act = str(player) + "|attack|" +str(my_field.get_children().find(selectedCard))+ "|"+str(opp_field.get_children().find(card))
+			execAction(act)
+			
+			if turnsActions[0]=="-1":
+				turnsActions = []
+			turnsActions.append(act)
+			
+			selectedCard = null
+			updateSelectionState("")

@@ -5,6 +5,15 @@ signal mouseExited
 signal clicked
 
 var cardName : String
+var description : String
+
+var handler : CardHandler
+
+var cardData = {
+	"hp":-1,
+	"atk":-1,
+	"canAttack":false
+}
 
 func _on_mouse_entered():
 	mouseEntered.emit()
@@ -24,6 +33,11 @@ func setCard(card):
 	$bg/TextureRect.texture = d.sprite
 	setHP(d.hp)
 	setATK(d.atk)
+	cardData.hp = d.hp
+	cardData.atk = d.atk
+	description = d.description
+	
+	handler = CardHandler.new(self)
 
 func setHP(hp):
 	$bg/hp/Label.text = str(hp)
@@ -36,3 +50,18 @@ func popUp():
 
 func popDown():
 	$bg.position.y = 0
+
+func clearFrame():
+	$frame.visible = false
+
+func highlight():
+	$frame.visible = true
+	var b = $frame.get_theme_stylebox("panel").duplicate()
+	b.bg_color = Color(1.0, 1.0, 0.0, 1.0)
+	$frame.add_theme_stylebox_override("panel",b)
+
+func candidateHighlight():
+	$frame.visible = true
+	var b = $frame.get_theme_stylebox("panel").duplicate()
+	b.bg_color = Color(0.0, 0.931, 1.0, 1.0)
+	$frame.add_theme_stylebox_override("panel",b)
