@@ -15,5 +15,10 @@ var cards = {
 		"hp":1,
 		"atk":1,
 		"sprite":preload("res://assets/croissant.jpg")
+	},
+	"George Washington":{
+		"hp":20,
+		"atk":20,
+		"sprite":preload("res://assets/georgewashington.jpg")
 	}
 }

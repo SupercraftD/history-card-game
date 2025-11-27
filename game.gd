@@ -23,6 +23,9 @@ var ismyturn = false
 
 var hand = []
 
+var selectedCard : CardNode = null
+var selectionState = ""
+
 @onready var my_field := $myField/HBoxContainer
 @onready var opp_field := $oppField/HBoxContainer
 
@@ -116,17 +119,17 @@ func init():
 			"country":"US",
 			"deck":[
 				"Musketeer",
+				"George Washington",
 				"Musketeer",
+				"George Washington",
 				"Musketeer",
+				"George Washington",
 				"Musketeer",
+				"George Washington",
 				"Musketeer",
+				"George Washington",
 				"Musketeer",
-				"Musketeer",
-				"Musketeer",
-				"Musketeer",
-				"Musketeer",
-				"Musketeer",
-				"Musketeer",
+				"George Washington",
 				"Musketeer",
 				"Musketeer",
 			],
@@ -217,7 +220,10 @@ func draw(count):
 		cardi.setCard(playerDat.deck.pop_front())
 		$console/ScrollContainer/VBoxContainer/HBoxContainer.add_child(cardi)
 		cardi.mouseEntered.connect(func():cardi.popUp())
-		cardi.mouseExited.connect(func():cardi.popDown())
+		cardi.mouseExited.connect(func():
+			if selectedCard != cardi:
+				cardi.popDown()
+		)
 		cardi.clicked.connect(handCardClicked.bind(cardi))
 		hand.append(cardi)
 
@@ -309,33 +315,73 @@ func _on_end_turn_pressed():
 #         at the start of opponent's next turn, execAction is called with the same string.
 #@param <action>:String, data describing action done. format TBD
 func execAction(action):
-	var parts = action.split(" ") 
+	var parts = action.split("|") 
 	
 	var actor = int(parts[0])
 	var command = parts[1]
-	var cardName = parts[2]
 	
 	if command == "play":
+		var cardName = parts[2]
+		var slot = int(parts[3])
+		
 		var card1: CardNode = cardScene.instantiate() #new unrelated cardnode
 		card1.setCard(cardName)  #configure card info from the card to play
 		
 		if actor == player:
 			my_field.add_child(card1) #if player does it, add it to their field, etc
+			my_field.move_child(card1, slot)
 		else:
 			opp_field.add_child(card1)
-	##what the button action
-	pass
+			opp_field.move_child(card1, slot)
+
 
 #handles when a card in the hand is clicked
 #@param <card>:CardNode, reference to the card node in hand
-func handCardClicked(card : CardNode): 
-	card.get_parent().remove_child(card) #remove card from parent of hand 
-	hand.erase(card)
+func handCardClicked(card : CardNode):
+	if selectedCard in hand and card != selectedCard:
+		selectedCard.popDown()
+	selectedCard = card
+	updateSelectionState("hand")
 	
-	var act = str(player) + " play " + card.cardName #does like 1 play musketeer 
+	
+
+var prevState = ""
+func updateSelectionState(state):
+	
+	clearCandidateHandPlaces()
+	
+	if state == "hand":
+		
+		var idx = 0
+		
+		while idx<my_field.get_child_count()+1:
+			var candidate :CardNode = cardScene.instantiate()
+			candidate.setCard(selectedCard.cardName)
+			candidate.add_to_group("handCandidate")
+			candidate.modulate = Color("6fe4ff84")
+			my_field.add_child(candidate)
+			my_field.move_child(candidate, idx)
+			candidate.clicked.connect(handCandidateSelected.bind(idx))
+			idx+=2
+	
+	prevState = state
+
+func clearCandidateHandPlaces():
+	for i in my_field.get_children():
+		if i.is_in_group("handCandidate"):
+			my_field.remove_child(i)
+			i.queue_free()
+
+func handCandidateSelected(idx):
+	clearCandidateHandPlaces()
+	var slot = int(idx/2)
+	
+	selectedCard.get_parent().remove_child(selectedCard) #remove card from parent of hand 
+	hand.erase(selectedCard)
+	
+	var act = str(player) + "|play|" + selectedCard.cardName + "|"+str(slot) #does like 1 play musketeer 
 	execAction(act)
 	
 	if turnsActions[0]=="-1":
 		turnsActions = []
 	turnsActions.append(act)
-	
