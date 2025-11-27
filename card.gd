@@ -32,7 +32,6 @@ func setATK(atk):
 	$bg/atk/Label.text = str(atk)
 
 func popUp():
-	print("wewe")
 	$bg.position.y = -100
 
 func popDown():

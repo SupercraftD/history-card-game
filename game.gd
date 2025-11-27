@@ -23,8 +23,8 @@ var ismyturn = false
 
 var hand = []
 
-@onready var my_field := $myField
-@onready var opp_field := $oppfield
+@onready var my_field := $myField/HBoxContainer
+@onready var opp_field := $oppField/HBoxContainer
 
 func _ready():
 	#test
@@ -210,16 +210,17 @@ var cardScene = preload("res://card.tscn")
 #@param <count>:int, number of cards to draw 
 func draw(count):
 	for i in range(count):
-		hand.append(playerDat.deck.pop_front())
+		
 		
 		#add card object to displayed hand in bottom left
 		var cardi : CardNode = cardScene.instantiate()
-		cardi.setCard(hand[-1])
+		cardi.setCard(playerDat.deck.pop_front())
 		$console/ScrollContainer/VBoxContainer/HBoxContainer.add_child(cardi)
 		cardi.mouseEntered.connect(func():cardi.popUp())
 		cardi.mouseExited.connect(func():cardi.popDown())
 		cardi.clicked.connect(handCardClicked.bind(cardi))
-		
+		hand.append(cardi)
+
 
 var icon = preload("res://assets/icon.svg")
 
@@ -259,15 +260,16 @@ func dataUpdate(d):
 	ismyturn = data.currentTurn == player
 	#on a new turn, call turnStart (am i overcommenting)
 	if ismyturn and not wasmyturn and not startedTurnAlready:
+		if player == 1:
+			print(d)
 		turnStart(data)
 
 #handles the start of a turn. PROBABLY NOT EVER CALLED BY YOU (yes, I mean you)
 #@param <data>:Dictionary, all the data of the server at the start of the turn
 func turnStart(data):
-	
+
 	startedTurnAlready = true
 	#do some random start of turn stuff
-	print("I am player"+str(player)+" and i am starting my turn now even though it is turn "+str(data.currentTurn))
 	$endTurn.visible = true
 	
 	if player==1:
@@ -282,9 +284,11 @@ func turnStart(data):
 	setOppHandCount(opp.handCount)
 	
 	#run through the opponent's previous turns actions and call execAction on them
+	print(data.turns)
 	if data.turns[0] != "-1":
 		for action in data.turns:
 			execAction(action)
+	turnsActions = ["-1"]
 
 #should hold this turns actions
 var turnsActions = ["-1"]
@@ -295,6 +299,7 @@ func _on_end_turn_pressed():
 	db_ref.update("player"+str(player),{"handCount":len(hand)})
 	db_ref.update("",{"currentTurn":1 if player == 2 else 2})
 	$endTurn.visible = false
+	await get_tree().create_timer(0.5).timeout
 	startedTurnAlready = false
 
 #performs an action based off the data present in the action string.
@@ -325,9 +330,12 @@ func execAction(action):
 #@param <card>:CardNode, reference to the card node in hand
 func handCardClicked(card : CardNode): 
 	card.get_parent().remove_child(card) #remove card from parent of hand 
-	my_field.add_child(card) 
+	hand.erase(card)
 	
-	var act = str(player) + " play " + card.card_name #does like 1 play musketeer 
+	var act = str(player) + " play " + card.cardName #does like 1 play musketeer 
 	execAction(act)
+	
+	if turnsActions[0]=="-1":
+		turnsActions = []
 	turnsActions.append(act)
 	
